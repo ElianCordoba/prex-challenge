@@ -1,0 +1,36 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id               String             @id @default(uuid())
+  email            String             @unique
+  password         String
+  name             String
+  Images           Images[]
+  ImagePermissions ImagePermissions[]
+}
+
+model Images {
+  createdAt        DateTime?          @default(now())
+  id               String             @id @default(uuid())
+  ownerId          String
+  format           String
+  url              String
+  owner            Users              @relation(fields: [ownerId], references: [id])
+  ImagePermissions ImagePermissions[]
+}
+
+model ImagePermissions {
+  id      String @id @default(uuid())
+  imageId String
+  image   Images @relation(fields: [imageId], references: [id])
+  userId  String
+  user    Users  @relation(fields: [userId], references: [id])
+}
